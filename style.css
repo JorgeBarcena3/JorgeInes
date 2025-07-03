@@ -9,66 +9,90 @@ h1 {
 
 .backgroundTitle {
 	background-color: #075E54;
-	height: 10vh; /* 10% del alto de la pantalla */
-	display: flex; /* activamos flexbox */
-	align-items: center; /* centra verticalmente */
-	justify-content: center; /* centra horizontalmente */
-	color: white; /* opcional: para que el texto contraste */
-	font-size: 2.5rem; /* opcional: tamaño del texto */
+	height: 10vh;
+	/* 10% del alto de la pantalla */
+	display: flex;
+	/* activamos flexbox */
+	align-items: center;
+	/* centra verticalmente */
+	justify-content: center;
+	/* centra horizontalmente */
+	color: white;
+	/* opcional: para que el texto contraste */
+	font-size: 2.5rem;
+	/* opcional: tamaño del texto */
 	font-family: fantasy;
-  }
-  
+}
 
-#page, #app {
-  max-width: 480px;
-  margin: 0 auto;
-  font-family: sans-serif;
-  padding: 1em;
+
+#page,
+#app {
+	max-width: 1024px;
+	margin: 0 auto;
+	font-family: sans-serif;
+	padding: 1em;
+	text-align: left;
 }
 
 .message {
-  padding: 0.75em; 
-  margin-bottom: 1em; 
-  overflow: auto;
-  border-radius: 8px;
+	width: fit-content;
+	padding: 0.75em;
+	margin-bottom: 1em;
+	overflow: auto;
+	border-radius: 8px;
 	break-inside: avoid;
+	margin-right: auto;
+	/* Alinea a la izquierda */
+	margin-left: 10px;
+	max-width: 75%;
+	text-align: left;
 }
 
 
 .message {
-  background:#F9FAF9;
-  color: #000;
+	background: #F9FAF9;
+	color: #000;
 	box-shadow: rgba(99, 99, 99, 0.404) 1px 1px 5px -2px;
 }
 
 .message.me {
-  background:#E1F6CA;
-  color: #000;
+	background: #E1F6CA;
+	color: #000;
+	margin-left: auto;
+	/* Empuja el mensaje a la derecha */
+	margin-right: 10px;
+	/* Opcional: margen desde el borde derecho */
+	max-width: 75%;
+	/* Evita que ocupe toda la línea */
+	text-align: left;
+	/* Para que el texto quede normal */
 }
 
 .message .lines {
-  word-wrap: break-word;
+	word-wrap: break-word;
 }
 
 .message .media img,
 .message .media video {
-  max-width: 100%;
-  height: auto;
+	max-width: 100%;
+	height: auto;
 }
 
 .meta {
 	margin-top: 5px;
-  font-size: small;
-  opacity: 0.5;
+	font-size: small;
+	opacity: 0.5;
 }
 
 .meta .username,
 .meta .timestamp {
 	display: inline-block;
 }
+
 .meta .username {
 	float: left;
 }
+
 .meta .timestamp {
 	float: right;
 }
@@ -76,8 +100,10 @@ h1 {
 
 .dateDivider {
 	text-align: center;
-	margin-bottom: 1em;;
+	margin-bottom: 1em;
+	;
 }
+
 .dateDivider .date {
 	font-size: small;
 	background-color: #c6c7e1;
@@ -88,18 +114,18 @@ h1 {
 
 
 ul.pagination {
-  padding: 0;
-  list-style: none;
+	padding: 0;
+	list-style: none;
 }
 
 .pagination li {
-  display: inline-block;
+	display: inline-block;
 }
 
 .pagination .page-item,
 button {
 	padding: 4px 8px;
-  margin: 2px;
+	margin: 2px;
 	border: solid 1px #ccc;
 	background: #eee;
 	cursor: pointer;
@@ -111,7 +137,7 @@ button:hover {
 }
 
 .pagination .active {
-background: #f9f9f9;
+	background: #f9f9f9;
 }
 
 
@@ -120,12 +146,13 @@ background: #f9f9f9;
 	font-size: small;
 }
 
-@media print{
-	.noprint{
-		display:none;
+@media print {
+	.noprint {
+		display: none;
 	}
+
 	.message {
 		border: solid 1px #ccc;
 		box-shadow: none;
 	}
-}	
+}
