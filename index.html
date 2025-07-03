@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de-DE">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>JORGE E INÉS - CHAT</title>
+	<meta name="description" content="Shows WhatsApp Chat Export">
+	<meta name="author" content="Marco Krage (my-azur.de)">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="modern-normalize.1.1.0.min.css" />
+	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="style_background_pattern.css" />
+	<style>
+[v-cloak] {
+	display: none;
+}
+html {
+	overflow-y: scroll;
+}
+	</style>
+	  <script>
+    function pedirPassword() {
+      const passwordCorrecta = "24092023";  // Cambia aquí la contraseña
+      const pass = prompt("Introduce la contraseña para ver esta página:\n¿Que dia empezamos?");
+
+      if (pass !== passwordCorrecta) {
+        alert("Contraseña incorrecta. No tienes acceso.");
+        // Puedes redirigir o bloquear aquí:
+        document.body.innerHTML = "<h2>Acceso denegado</h2>";
+        return false;
+      }
+      // Contraseña correcta, permite ver la página
+      return true;
+    }
+
+    window.onload = function() {
+      pedirPassword();
+    }
+  </script>
+</head>
+<body>
+	<div class="backgroundTitle">
+		<span>JORGE</span><span>&nbsp;E&nbsp;</span><span>INÉS</span> 💙
+	</div>
+<div id="app" v-cloak>
+
+
+		<div v-if="messages.length == 0">
+			Cargando...
+		</div>
+		<template v-else v-for="(message, n) in pagedMessages" >
+
+			<div v-if="n == 0 || message.newDay" class="dateDivider">
+				<div class="date">{{message.date | formatDateDivider}}</div>
+			</div>
+
+			<div class="message" :class="{me: message.me}">
+				<div class="lines">
+					<div class="line" v-for="line in message.lines" v-html="line"></div>
+				</div>
+				<div class="meta">
+					<div class="username">{{message.username}}</div>
+					<div class="timestamp">{{message.timestamp}}</div>
+				</div>
+			</div>
+		</template>
+
+		<div class="help noprint">
+			Teclas de flecha o cambio+rueda del mouse para cambiar de página
+		</div>
+
+		<div class="noprint">
+			<ul class="pagination" v-if="pagedMessages.length != messagesCount">
+				<li v-if="false" @click="pageChange('previous')" class="page-item">&#171;</li>
+				<li @click="pageChange(1)" :class="[currentPage==1 ? 'active' : '']" class="page-item">1</li>
+				<li v-if="currentPage > (navNum*2)-1">&hellip;</li>
+				<template v-for="n in range(currentPage-navNum, currentPage+navNum, 1)">
+					<li v-if="n > 1 && n < pageCount" @click="pageChange(n)" class="page-item" :class="[currentPage==n ? 'active' : '']">{{n}}</li>
+				</template>
+				<li v-if="currentPage < pageCount-navNum-1">&hellip;</li>
+				<li @click="pageChange(pageCount)" class="page-item" :class="[currentPage==pageCount ? 'active' : '']">{{pageCount}}</li>
+				<li v-if="false" @click="pageChange('next')" class="page-item">&#187;</li>
+			</ul>
+			<p>
+				msg/pag: <select @change="changePerPage(event.target.value)">
+					<option>100</option>
+					<option>50</option>
+					<option>1000</option>
+					<!-- <option value="-1">alle</option> -->
+				</select>
+			</p>
+	</div>
+
+		<p v-if="messages.length > 0">
+			Hay {{messagesCount}} mensajes de {{statsTimespan}} días cargados.
+			Período: {{statsFirstMessageDate | formatDate}} a {{statsLastMessageDate | formatDate}}
+		</p>
+	
+</div>
+
+<script src="vue.2.6.14.min.js"></script>
+<script src="axios.0.21.1.min.js"></script>
+<script src="autolink-min.js"></script>
+<script>
+var myNames = ["Jorgee"]; // Your Whats App Names in Messages
+var perPage = 50;
+var jumpToLastPage = false;
+</script>
+<script src="app.js"></script>
+</body>
+</html>
