@@ -10,90 +10,8 @@ var app = new Vue({
 		}
 	},
 	mounted: function () {
-		var that = this;
-		axios.get('WhatsApp_Chat.txt')
-			.then(function (res) {
-				//console.log(res.data);
-				var data = res.data;
-				data = data.replace(/\u200E/g, ""); // Left-To-Right Mark
 
-				var lines = data.split(/(\n|\r)/);
-
-				// Debug: Import kürzen
-				//lines = lines.slice(0, 200)
-
-				var message;
-				lines.forEach(function (line) {
-					line = line.replace(/(\r\n|\n|\r)/gm, "").trim();
-					if (line.length == 0) { return; }
-					var newMessage = /^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}.*/.test(line);
-
-					if (newMessage && message) {
-						that.messages.push(message);
-					}
-
-					if (newMessage) {
-						message = {};
-						message.lines = [];
-						// Timestamp
-						var tmpTimestamp = line.match(/^\[([0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2})\]/);
-						if (tmpTimestamp) {
-							message.timestamp = tmpTimestamp[1];
-							message.date = parseWhatsAppDate(tmpTimestamp[1]);
-							if (that.messages.length > 1) { // Ab der zweiten Nachricht
-								message.newDay = !that.sameDay(that.messages[that.messages.length - 1].date, message.date)
-							}
-						}
-					}
-
-					// Special Chars
-					line = line.replace(/</g, '&lt;');
-
-					// Media
-					line = line.replace(/([a-zA-Z0-9-]+\.jpg)\ &lt;angeh�ngt>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
-					line = line.replace(/([a-zA-Z0-9-]+\.jpg)\ &lt;angehängt>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
-					line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\.jpg|webp|gif)\>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
-					line = line.replace(/([a-zA-Z0-9-]+\.jpg|webp|gif) (Datei angehängt)/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
-					line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\.mp4)\>/g, '<div class="media"><video src="media/$1" controls=""></div>');
-					line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\..+)\>/g, '<div class="media">Media: <a href="media/$1" target="blank">$1</a></div>');
-
-					// Username
-					var tmpUsername = line.match(/^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}\] (.+?):/);
-					if (tmpUsername) {
-						message.username = tmpUsername[1];
-						message.me = (myNames.indexOf(tmpUsername[1]) > -1);
-					}
-
-					// Message      
-					var tmpMessage = line.match(/^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}\] .+?: (.*)/);
-					if (tmpMessage) {
-						// First Line of message with meta
-						line = tmpMessage[1];
-					}
-
-					// link URLs 
-					line = line.autoLink()
-					if (line.includes("<Multimedia omitido>"))
-						return;
-
-					// following lines without meta
-					message.lines.push(line);
-
-				});
-
-				// Add Last Message
-				that.messages.push(message);
-
-				if (jumpToLastPage) {
-					that.currentPage = that.pageCount
-				}
-
-			})
-			.catch(function (error) {
-				// handle error
-				console.log(error);
-			})
-
+		this.readFile();
 
 		window.addEventListener('wheel', function (e) {
 			if (!e.shiftKey) {
@@ -126,6 +44,89 @@ var app = new Vue({
 
 	},
 	methods: {
+		readFile() {
+			var that = this;
+			axios.get('WhatsApp_Chat.txt')
+				.then(function (res) {
+					//console.log(res.data);
+					var data = res.data;
+					data = data.replace(/\u200E/g, ""); // Left-To-Right Mark
+
+					var lines = data.split(/(\n|\r)/);
+
+					// Debug: Import kürzen
+					//lines = lines.slice(0, 200)
+
+					var message;
+					lines.forEach(function (line) {
+						line = line.replace(/(\r\n|\n|\r)/gm, "").trim();
+						if (line.length == 0) { return; }
+						var newMessage = /^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}.*/.test(line);
+
+						if (newMessage && message) {
+							that.messages.push(message);
+						}
+
+						if (newMessage) {
+							message = {};
+							message.lines = [];
+							// Timestamp
+							var tmpTimestamp = line.match(/^\[([0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2})\]/);
+							if (tmpTimestamp) {
+								message.timestamp = tmpTimestamp[1];
+								message.date = parseWhatsAppDate(tmpTimestamp[1]);
+								if (that.messages.length > 1) { // Ab der zweiten Nachricht
+									message.newDay = !that.sameDay(that.messages[that.messages.length - 1].date, message.date)
+								}
+							}
+						}
+
+						// Special Chars
+						line = line.replace(/</g, '&lt;');
+
+						// Media
+						line = line.replace(/([a-zA-Z0-9-]+\.jpg)\ &lt;angeh�ngt>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
+						line = line.replace(/([a-zA-Z0-9-]+\.jpg)\ &lt;angehängt>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
+						line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\.jpg|webp|gif)\>/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
+						line = line.replace(/([a-zA-Z0-9-]+\.jpg|webp|gif) (Datei angehängt)/g, '<div class="media"><a href="media/$1" target="blank"><img src="media/$1" /></a></div>');
+						line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\.mp4)\>/g, '<div class="media"><video src="media/$1" controls=""></div>');
+						line = line.replace(/\&lt;Anhang: ([a-zA-Z0-9-]+\..+)\>/g, '<div class="media">Media: <a href="media/$1" target="blank">$1</a></div>');
+
+						// Username
+						var tmpUsername = line.match(/^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}\] (.+?):/);
+						if (tmpUsername) {
+							message.username = tmpUsername[1];
+							message.me = (myNames.indexOf(tmpUsername[1]) > -1);
+						}
+
+						// Message      
+						var tmpMessage = line.match(/^\[[0-9]{2}\.[0-9]{2}\.[0-9]{2}, [0-9]{2}:[0-9]{2}:[0-9]{2}\] .+?: (.*)/);
+						if (tmpMessage) {
+							// First Line of message with meta
+							line = tmpMessage[1];
+						}
+
+						// link URLs 
+						line = line.autoLink();
+
+						// following lines without meta
+						message.lines.push(line);
+
+					});
+
+					// Add Last Message
+					that.messages.push(message);
+
+					if (jumpToLastPage) {
+						that.currentPage = that.pageCount
+					}
+
+				})
+				.catch(function (error) {
+					// handle error
+					console.log(error);
+				})
+		},
 		pageChange(value) {
 			console.log('pageChangeHandle', value);
 			switch (value) {
@@ -247,3 +248,16 @@ document.addEventListener('touchend', e => {
 	touchEndX = e.changedTouches[0].screenX;
 	handleGesture();
 });
+
+function setUser(name) {
+	if (name === 'jorge') {
+		myNames = ["Jorgee"];
+	} else if (name === 'ines') {
+		myNames = ["Inés Nesi"];
+	}
+
+	console.log("myNames set to:", myNames);
+	// Puedes continuar con lógica adicional aquí
+	app.messages = [],
+	app.readFile();
+}
